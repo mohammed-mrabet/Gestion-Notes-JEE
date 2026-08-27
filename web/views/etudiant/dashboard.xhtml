@@ -1,0 +1,213 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="jakarta.faces.html"
+      xmlns:f="jakarta.faces.core"
+      xmlns:ui="jakarta.faces.facelets">
+      
+<h:head>
+    <title>Dashboard Étudiant</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"/>
+    <style>
+        .dashboard-card {
+            height: 100%;
+            transition: transform 0.2s;
+        }
+        .dashboard-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+        }
+        .stat-number {
+            font-size: 2rem;
+            font-weight: bold;
+        }
+    </style>
+</h:head>
+
+<h:body>
+    <ui:include src="/includes/header.xhtml" />
+    
+    <div class="container">
+        <div class="row mb-4">
+            <div class="col-12">
+                <h1 class="mb-4">👨‍🎓 Dashboard Étudiant</h1>
+                
+                <div class="alert alert-info">
+                    <h4 class="alert-heading">Bienvenue #{authentificationController.utilisateurCourant.prenom} !</h4>
+                    <p>Vous êtes connecté en tant qu'étudiant.</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="row">
+            <!-- Carte Informations personnelles -->
+            <div class="col-md-6 mb-3">
+                <div class="card h-100 dashboard-card">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="mb-0">👤 Mes informations</h5>
+                    </div>
+                    <div class="card-body">
+                        <table class="table table-borderless">
+                            <tr>
+                                <th>Nom complet :</th>
+                                <td>#{authentificationController.utilisateurCourant.prenom} #{authentificationController.utilisateurCourant.nom}</td>
+                            </tr>
+                            <tr>
+                                <th>CNE :</th>
+                                <td>#{authentificationController.utilisateurCourant.cne}</td>
+                            </tr>
+                            <tr>
+                                <th>Classe :</th>
+                                <td>#{authentificationController.utilisateurCourant.classe}</td>
+                            </tr>
+                            <tr>
+                                <th>Email :</th>
+                                <td>#{authentificationController.utilisateurCourant.email}</td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Carte Statistiques rapides -->
+            <div class="col-md-6 mb-3">
+                <div class="card h-100 dashboard-card">
+                    <div class="card-header bg-success text-white">
+                        <h5 class="mb-0">📊 Mes statistiques</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row text-center">
+                            <div class="col-6 mb-3">
+                                <div class="border rounded p-3">
+                                    <h3 class="stat-number">
+                                        <h:outputText value="#{noteController.moyenneEtudiant}">
+                                            <f:convertNumber pattern="0.00"/>
+                                        </h:outputText>
+                                    </h3>
+                                    <small>Moyenne générale</small>
+                                </div>
+                            </div>
+                            <div class="col-6 mb-3">
+                                <div class="border rounded p-3">
+                                    <h3 class="stat-number">#{noteController.nombreMatieresValidees}</h3>
+                                    <small>Matières validées</small>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="border rounded p-3">
+                                    <h3 class="stat-number">#{noteController.notes.size()}</h3>
+                                    <small>Notes enregistrées</small>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="border rounded p-3">
+                                    <h3 class="stat-number">
+                                        <h:outputText value="#{noteController.noteMax}">
+                                            <f:convertNumber pattern="0.00"/>
+                                        </h:outputText>
+                                    </h3>
+                                    <small>Note maximale</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="row">
+            <!-- Carte Mes notes -->
+            <div class="col-md-6 mb-3">
+                <div class="card dashboard-card">
+                    <div class="card-header bg-info text-white">
+                        <h5 class="mb-0">📝 Mes notes</h5>
+                    </div>
+                    <div class="card-body">
+                        <p>Consulter le détail de toutes mes notes par matière.</p>
+                        <h:link outcome="/views/etudiant/mesNotes" 
+                               styleClass="btn btn-info w-100">
+                            Voir mes notes →
+                        </h:link>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Carte Bulletin -->
+            <div class="col-md-6 mb-3">
+                <div class="card dashboard-card">
+                    <div class="card-header bg-warning">
+                        <h5 class="mb-0">📄 Mon bulletin</h5>
+                    </div>
+                    <div class="card-body">
+                        <p>Télécharger mon bulletin officiel au format PDF.</p>
+                        <h:form>
+                            <h:commandButton value="📥 Télécharger le bulletin" 
+                                           action="#{noteController.exporterBulletinPDF}"
+                                           styleClass="btn btn-warning w-100" />
+                        </h:form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Dernières notes -->
+        <div class="row mt-3">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header bg-secondary text-white">
+                        <h5 class="mb-0">📋 Dernières notes</h5>
+                    </div>
+                    <div class="card-body">
+                        <ui:fragment rendered="#{not empty noteController.notes}">
+                            <table class="table table-sm">
+                                <thead>
+                                    <tr>
+                                        <th>Module</th>
+                                        <th>Note</th>
+                                        <th>Coefficient</th>
+                                        <th>Session</th>
+                                        <th>Date</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <ui:repeat value="#{noteController.notes}" var="note" varStatus="status">
+                                        <ui:fragment rendered="#{status.index lt 5}">
+                                            <tr>
+                                                <!-- CORRECTION ICI : note.module au lieu de note.matiere -->
+                                                <td>#{note.module.nom}</td>
+                                                <td class="#{note.note >= 10 ? 'text-success' : 'text-danger'} fw-bold">
+                                                    <h:outputText value="#{note.note}">
+                                                        <f:convertNumber pattern="0.00"/>
+                                                    </h:outputText>/20
+                                                </td>
+                                                <td>#{note.module.coefficient}</td>
+                                                <td>#{note.session}</td>
+                                                <td>
+                                                    <!-- Affichage simple de la date -->
+                                                    #{note.dateSaisie.toLocalDate()}
+                                                </td>
+                                            </tr>
+                                        </ui:fragment>
+                                    </ui:repeat>
+                                </tbody>
+                            </table>
+                            
+                            <div class="text-center mt-3">
+                                <h:link outcome="/views/etudiant/mesNotes" styleClass="btn btn-sm btn-outline-primary">
+                                    Voir toutes mes notes
+                                </h:link>
+                            </div>
+                        </ui:fragment>
+                        
+                        <ui:fragment rendered="#{empty noteController.notes}">
+                            <p class="text-center text-muted">Aucune note disponible pour le moment.</p>
+                        </ui:fragment>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <ui:include src="/includes/footer.xhtml" />
+</h:body>
+</html>

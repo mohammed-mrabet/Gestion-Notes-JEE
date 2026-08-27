@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="jakarta.faces.html"
+      xmlns:f="jakarta.faces.core"
+      xmlns:ui="jakarta.faces.facelets">
+      
+<h:head>
+    <title>Mes Notes</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"/>
+</h:head>
+
+<h:body>
+    <ui:include src="/includes/header.xhtml" />
+    
+    <div class="container">
+        <h1 class="mb-4">📝 Mes Notes</h1>
+        
+        <h:messages styleClass="alert alert-info" />
+        
+        <h:form>
+            <!-- Informations personnelles -->
+            <div class="card mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">Informations personnelles</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-3">
+                            <p><strong>Nom :</strong> #{authentificationController.utilisateurCourant.nom}</p>
+                        </div>
+                        <div class="col-md-3">
+                            <p><strong>Prénom :</strong> #{authentificationController.utilisateurCourant.prenom}</p>
+                        </div>
+                        <div class="col-md-3">
+                            <p><strong>CNE :</strong> 
+                                <h:outputText value="#{authentificationController.utilisateurCourant.cne}" />
+                            </p>
+                        </div>
+                        <div class="col-md-3">
+                            <p><strong>Classe :</strong> 
+                                <h:outputText value="#{authentificationController.utilisateurCourant.classe}" />
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Détail des notes -->
+            <div class="card">
+                <div class="card-header bg-success text-white d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">Détail des notes</h5>
+                    <h:commandLink action="#{noteController.chargerNotesEtudiant}" 
+                                   styleClass="btn btn-sm btn-light"
+                                   value="🔄 Actualiser les notes" />
+                </div>
+                <div class="card-body">
+                    <ui:fragment rendered="#{not empty noteController.notes}">
+                        <div class="table-responsive">
+                            <table class="table table-striped table-hover">
+                                <thead class="table-dark">
+                                    <tr>
+                                        <th>Module</th>
+                                        <th>Coefficient</th>
+                                        <th>Note</th>
+                                        <th>Appréciation</th>
+                                        <th>Session</th>
+                                        <th>Date saisie</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <ui:repeat value="#{noteController.notes}" var="note">
+                                        <tr>
+                                            <td>
+                                                <h:outputText value="#{note.module.nom}" />
+                                            </td>
+                                            <td>
+                                                <h:outputText value="#{note.module.coefficient}" />
+                                            </td>
+                                            <td>
+                                                <span class="#{note.note >= 10 ? 'text-success' : 'text-danger'} fw-bold">
+                                                    <h:outputText value="#{note.note}">/20</h:outputText>
+                                                </span>
+                                            </td>
+                                            <td>
+                                                <h:panelGroup rendered="#{note.note ge 16}">
+                                                    <span class="badge bg-success">Très Bien</span>
+                                                </h:panelGroup>
+                                                <h:panelGroup rendered="#{note.note ge 14 and note.note lt 16}">
+                                                    <span class="badge bg-primary">Bien</span>
+                                                </h:panelGroup>
+                                                <h:panelGroup rendered="#{note.note ge 12 and note.note lt 14}">
+                                                    <span class="badge bg-info">Assez Bien</span>
+                                                </h:panelGroup>
+                                                <h:panelGroup rendered="#{note.note ge 10 and note.note lt 12}">
+                                                    <span class="badge bg-warning text-dark">Passable</span>
+                                                </h:panelGroup>
+                                                <h:panelGroup rendered="#{note.note lt 10}">
+                                                    <span class="badge bg-danger">Insuffisant</span>
+                                                </h:panelGroup>
+                                            </td>
+                                            <td>
+                                                <h:outputText value="#{note.session}" />
+                                            </td>
+                                            <td>
+                                                <!-- SOLUTION ULTIME : affichage direct sans convertisseur -->
+                                                #{note.dateSaisie.toLocalDate()}
+                                            </td>
+                                        </tr>
+                                    </ui:repeat>
+                                </tbody>
+                            </table>
+                        </div>
+                        
+                        <!-- Statistiques -->
+                        <div class="row mt-4">
+                            <div class="col-md-4">
+                                <div class="card bg-light">
+                                    <div class="card-body text-center">
+                                        <h6 class="card-title">Moyenne générale</h6>
+                                        <h3 class="text-primary">
+                                            <h:outputText value="#{noteController.moyenneEtudiant}">
+                                                <f:convertNumber pattern="0.00"/> /20
+                                            </h:outputText>
+                                        </h3>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="card bg-light">
+                                    <div class="card-body text-center">
+                                        <h6 class="card-title">Nombre de notes</h6>
+                                        <h3 class="text-success">
+                                            <h:outputText value="#{noteController.notes.size()}" />
+                                        </h3>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="card bg-light">
+                                    <div class="card-body text-center">
+                                        <h6 class="card-title">Matières validées</h6>
+                                        <h3 class="text-info">
+                                            <h:outputText value="#{noteController.nombreMatieresValidees}" />
+                                        </h3>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Boutons d'export -->
+                        <div class="mt-4 text-center">
+                            <h:commandButton action="#{noteController.exporterCSV}" 
+                                           styleClass="btn btn-secondary me-2"
+                                           value="⬇️ Exporter en CSV" />
+                            <h:commandButton action="#{noteController.exporterBulletinPDF}" 
+                                           styleClass="btn btn-primary"
+                                           value="📄 Télécharger bulletin PDF" />
+                        </div>
+                    </ui:fragment>
+                    
+                    <ui:fragment rendered="#{empty noteController.notes}">
+                        <div class="alert alert-info text-center p-5">
+                            <h3>Aucune note disponible</h3>
+                            <p>Vous n'avez pas encore de notes enregistrées pour le moment.</p>
+                        </div>
+                    </ui:fragment>
+                </div>
+            </div>
+        </h:form>
+    </div>
+    
+    <ui:include src="/includes/footer.xhtml" />
+</h:body>
+</html>

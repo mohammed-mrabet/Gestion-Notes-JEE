@@ -1,0 +1,276 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="jakarta.faces.html"
+      xmlns:f="jakarta.faces.core"
+      xmlns:ui="jakarta.faces.facelets">
+      
+<h:head>
+    <title>Dashboard Professeur</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"/>
+</h:head>
+
+<h:body>
+    <ui:include src="/includes/header.xhtml" />
+    
+    <div class="container">
+        <h1 class="mb-4">👨‍🏫 Dashboard Professeur</h1>
+        
+        <h:messages globalOnly="true" styleClass="alert alert-info" />
+        
+        <div class="row mb-4">
+            <div class="col-md-6">
+                <div class="card bg-primary text-white">
+                    <div class="card-body">
+                        <h5 class="card-title">Bienvenue</h5>
+                        <p class="card-text">
+                            <strong>#{authentificationController.utilisateurCourant.prenom} 
+                                   #{authentificationController.utilisateurCourant.nom}</strong>
+                        </p>
+                        <p>Spécialité: #{authentificationController.utilisateurCourant.specialite}</p>
+                        <p>Grade: #{authentificationController.utilisateurCourant.grade}</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-6">
+                <div class="card bg-success text-white">
+                    <div class="card-body">
+                        <h5 class="card-title">Statistiques rapides</h5>
+                        <div class="row">
+                            <div class="col-6">
+                                <p>📚 Modules enseignés</p>
+                                <h3>
+                                    <h:outputText value="#{professeurController.nombreModules}" />
+                                </h3>
+                            </div>
+                            <div class="col-6">
+                                <p>👥 Étudiants</p>
+                                <h3>
+                                    <h:outputText value="#{professeurController.nombreEtudiants}" />
+                                </h3>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="row">
+            <div class="col-md-4 mb-3">
+                <div class="card h-100">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="mb-0">📝 Saisie des notes</h5>
+                    </div>
+                    <div class="card-body">
+                        <p>Accéder à l'interface de saisie des notes pour vos modules.</p>
+                        
+                        <!-- Liste des modules du professeur -->
+                        <ui:fragment rendered="#{not empty professeurController.modules}">
+                            <ul class="list-group mb-3">
+                                <ui:repeat value="#{professeurController.modules}" var="module">
+                                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                                        #{module.nom}
+                                        <span class="badge bg-primary rounded-pill">
+                                            <h:outputText value="#{professeurController.getNombreEtudiantsParModule(module.id)}" /> étudiants
+                                        </span>
+                                    </li>
+                                </ui:repeat>
+                            </ul>
+                        </ui:fragment>
+                        
+                        <h:link outcome="/views/professeur/saisieNotes" 
+                               styleClass="btn btn-primary w-100">
+                            Accéder à la saisie
+                        </h:link>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-4 mb-3">
+                <div class="card h-100">
+                    <div class="card-header bg-info text-white">
+                        <h5 class="mb-0">👥 Liste des étudiants</h5>
+                    </div>
+                    <div class="card-body">
+                        <p>Consulter la liste des étudiants par module.</p>
+                        
+                        <h:link outcome="/views/professeur/listeEtudiants" 
+                               styleClass="btn btn-info w-100 mb-2">
+                            Tous les étudiants
+                        </h:link>
+                        
+                        <!-- Liens par module -->
+                        <ui:fragment rendered="#{not empty professeurController.modules}">
+                            <ui:repeat value="#{professeurController.modules}" var="module">
+                                <h:link outcome="/views/professeur/listeEtudiants?module=#{module.id}" 
+                                       styleClass="btn btn-outline-info w-100 mb-2">
+                                    Étudiants de #{module.nom}
+                                </h:link>
+                            </ui:repeat>
+                        </ui:fragment>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-4 mb-3">
+                <div class="card h-100">
+                    <div class="card-header bg-warning">
+                        <h5 class="mb-0">📊 Statistiques</h5>
+                    </div>
+                    <div class="card-body">
+                        <p>Visualiser les statistiques des notes.</p>
+                        
+                        <h:form>
+                            <div class="mb-3">
+                                <label class="form-label">Module :</label>
+                                <h:selectOneMenu styleClass="form-select" value="#{noteController.idMatiereSelectionnee}">
+                                    <f:selectItem itemValue="0" itemLabel="Tous les modules" />
+                                    <ui:repeat value="#{professeurController.modules}" var="module">
+                                        <f:selectItem itemValue="#{module.id}" itemLabel="#{module.nom}" />
+                                    </ui:repeat>
+                                </h:selectOneMenu>
+                            </div>
+                            
+                            <h:commandButton value="Afficher les statistiques" 
+                                           action="#{noteController.calculerStatistiques}"
+                                           styleClass="btn btn-warning w-100 mb-2">
+                                <f:ajax execute="@form" render="statistiquesSection" />
+                            </h:commandButton>
+                        </h:form>
+                        
+                        <h:commandLink value="📥 Exporter en CSV" 
+                                      action="#{noteController.exporterCSVProfesseur}"
+                                      styleClass="btn btn-secondary w-100" />
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Section des statistiques -->
+        <h:panelGroup id="statistiquesSection">
+            <ui:fragment rendered="#{not empty noteController.statistiques}">
+                <div class="card mt-4">
+                    <div class="card-header bg-success text-white">
+                        <h5 class="mb-0">Statistiques des notes</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-3">
+                                <div class="card bg-light">
+                                    <div class="card-body text-center">
+                                        <h6>Moyenne générale</h6>
+                                        <h3 class="text-primary">
+                                            <h:outputText value="#{noteController.statistiques['moyenneGenerale']}">
+                                                <f:convertNumber pattern="0.00"/>
+                                            </h:outputText>
+                                        </h3>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="card bg-light">
+                                    <div class="card-body text-center">
+                                        <h6>Nombre de notes</h6>
+                                        <h3 class="text-success">
+                                            <h:outputText value="#{noteController.statistiques['nombreNotes']}" />
+                                        </h3>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="card bg-light">
+                                    <div class="card-body text-center">
+                                        <h6>Note minimale</h6>
+                                        <h3 class="text-danger">
+                                            <h:outputText value="#{noteController.statistiques['noteMin']}">
+                                                <f:convertNumber pattern="0.00"/>
+                                            </h:outputText>
+                                        </h3>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="card bg-light">
+                                    <div class="card-body text-center">
+                                        <h6>Note maximale</h6>
+                                        <h3 class="text-success">
+                                            <h:outputText value="#{noteController.statistiques['noteMax']}">
+                                                <f:convertNumber pattern="0.00"/>
+                                            </h:outputText>
+                                        </h3>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="mt-4">
+                            <h6>Répartition des notes</h6>
+                            <div class="progress" style="height: 30px;">
+                                <div class="progress-bar bg-danger" 
+                                     style="width: #{noteController.statistiques['pourcentageEchec']}%">
+                                    Échec (<h:outputText value="#{noteController.statistiques['pourcentageEchec']}">
+                                        <f:convertNumber pattern="0.0"/>
+                                    </h:outputText>%)
+                                </div>
+                                <div class="progress-bar bg-warning" 
+                                     style="width: #{noteController.statistiques['pourcentagePassable']}%">
+                                    Passable
+                                </div>
+                                <div class="progress-bar bg-success" 
+                                     style="width: #{noteController.statistiques['pourcentageReussite']}%">
+                                    Réussite
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </ui:fragment>
+        </h:panelGroup>
+        
+        <!-- Dernières notes saisies -->
+        <div class="card mt-4">
+            <div class="card-header bg-secondary text-white">
+                <h5 class="mb-0">Dernières notes saisies</h5>
+            </div>
+            <div class="card-body">
+                <ui:fragment rendered="#{not empty noteController.dernieresNotes}">
+                    <table class="table table-sm">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Étudiant</th>
+                                <th>Module</th>
+                                <th>Note</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <ui:repeat value="#{noteController.dernieresNotes}" var="note">
+                                <tr>
+                                    <td>
+                                        <h:outputText value="#{note.dateSaisie}">
+                                            <f:convertDateTime pattern="dd/MM/yyyy" type="localDateTime" />
+                                        </h:outputText>
+                                    </td>
+                                    <td>#{note.etudiant.prenom} #{note.etudiant.nom}</td>
+                                    <!-- CORRECTION : remplacer note.matiere.nom par note.module.nom -->
+                                    <td>#{note.module.nom}</td>
+                                    <td class="#{note.note >= 10 ? 'text-success' : 'text-danger'} fw-bold">
+                                        <h:outputText value="#{note.note}">/20</h:outputText>
+                                    </td>
+                                </tr>
+                            </ui:repeat>
+                        </tbody>
+                    </table>
+                </ui:fragment>
+                
+                <ui:fragment rendered="#{empty noteController.dernieresNotes}">
+                    <p class="text-center text-muted">Aucune note saisie récemment</p>
+                </ui:fragment>
+            </div>
+        </div>
+    </div>
+    
+    <ui:include src="/includes/footer.xhtml" />
+</h:body>
+</html>

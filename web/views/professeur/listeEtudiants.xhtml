@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="jakarta.faces.html"
+      xmlns:f="jakarta.faces.core"
+      xmlns:ui="jakarta.faces.facelets">
+      
+<h:head>
+    <title>Liste des étudiants</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"/>
+    <f:event type="preRenderView" listener="#{professeurController.chargerModules}" />
+</h:head>
+
+<h:body>
+    <ui:include src="/includes/header.xhtml" />
+    
+    <div class="container">
+        <h1 class="mb-4">👥 Liste des étudiants</h1>
+        
+        <h:messages globalOnly="true" styleClass="alert alert-info" />
+        
+        <h:form>
+            <div class="card mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">Filtres</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="mb-3">
+                                <label class="form-label">Module :</label>
+                                <h:selectOneMenu value="#{professeurController.filtreModule}" 
+                                                styleClass="form-select">
+                                    <f:selectItem itemValue="" itemLabel="Tous les modules" />
+                                    <f:selectItems value="#{professeurController.modules}" var="module" 
+                                                  itemValue="#{module.id}" itemLabel="#{module.nom}" />
+                                </h:selectOneMenu>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="mb-3">
+                                <label class="form-label">Classe :</label>
+                                <h:selectOneMenu value="#{professeurController.filtreClasse}" 
+                                                styleClass="form-select">
+                                    <f:selectItem itemValue="" itemLabel="Toutes les classes" />
+                                    <f:selectItem itemValue="GL3" itemLabel="GL3" />
+                                    <f:selectItem itemValue="BD3" itemLabel="BD3" />
+                                    <f:selectItem itemValue="IA3" itemLabel="IA3" />
+                                </h:selectOneMenu>
+                            </div>
+                        </div>
+                        <div class="col-md-4 d-flex align-items-end">
+                            <h:commandButton value="Filtrer" 
+                                           action="#{professeurController.filtrerEtudiants}"
+                                           styleClass="btn btn-primary me-2">
+                                <f:ajax execute="@form" render="resultats" />
+                            </h:commandButton>
+                            <h:commandButton value="Réinitialiser" 
+                                           action="#{professeurController.reinitialiserFiltres}"
+                                           styleClass="btn btn-secondary">
+                                <f:ajax execute="@this" render="resultats" />
+                            </h:commandButton>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <h:panelGroup id="resultats">
+                <div class="card">
+                    <div class="card-header bg-success text-white">
+                        <h5 class="mb-0">Résultats</h5>
+                    </div>
+                    <div class="card-body">
+                        <!-- CORRECTION : remplacer etudiantsFiltres par etudiantsAvecMoyennes -->
+                        <ui:fragment rendered="#{not empty professeurController.etudiantsAvecMoyennes}">
+                            <div class="table-responsive">
+                                <table class="table table-striped table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>CNE</th>
+                                            <th>Nom</th>
+                                            <th>Prénom</th>
+                                            <th>Classe</th>
+                                            <th>Email</th>
+                                            <th>Moyenne</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <!-- CORRECTION : utiliser item.etudiant et item.moyenne -->
+                                        <ui:repeat value="#{professeurController.etudiantsAvecMoyennes}" var="item">
+                                            <tr>
+                                                <td>#{item.etudiant.cne}</td>
+                                                <td>#{item.etudiant.nom}</td>
+                                                <td>#{item.etudiant.prenom}</td>
+                                                <td>#{item.etudiant.classe}</td>
+                                                <td>#{item.etudiant.email}</td>
+                                                <td>
+                                                    <h:outputText value="#{item.moyenne}">
+                                                        <f:convertNumber pattern="0.00"/>
+                                                    </h:outputText>/20
+                                                </td>
+                                                <td>
+                                                    <h:link outcome="/views/professeur/saisieNotes" 
+                                                           styleClass="btn btn-sm btn-primary">
+                                                        <f:param name="etudiantId" value="#{item.etudiant.id}" />
+                                                        Saisir notes
+                                                    </h:link>
+                                                </td>
+                                            </tr>
+                                        </ui:repeat>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </ui:fragment>
+                        
+                        <!-- CORRECTION : remplacer etudiantsFiltres par etudiantsAvecMoyennes -->
+                        <ui:fragment rendered="#{empty professeurController.etudiantsAvecMoyennes}">
+                            <p class="text-center text-muted">Aucun étudiant trouvé</p>
+                        </ui:fragment>
+                    </div>
+                </div>
+            </h:panelGroup>
+        </h:form>
+    </div>
+    
+    <ui:include src="/includes/footer.xhtml" />
+</h:body>
+</html>

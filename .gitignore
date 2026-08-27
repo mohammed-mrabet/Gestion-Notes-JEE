@@ -1,0 +1,169 @@
+# ============================================
+# FICHIERS .gitignore POUR MINIPROJET_JEE
+# ============================================
+
+# ============================================
+# 1. FICHIERS NETBEANS
+# ============================================
+nbproject/
+nbproject/private/
+nbproject/private.xml
+nbproject/private.properties
+nbactions.xml
+nb-configuration.xml
+build/
+dist/
+build.xml
+manifest.mf
+
+# ============================================
+# 2. FICHIERS JAVA COMPILÉS
+# ============================================
+*.class
+*.jar
+*.war
+*.ear
+*.log
+*.tmp
+*.swp
+*.lock
+
+# ============================================
+# 3. DOSSIERS DE BUILD ET DEPLOIEMENT
+# ============================================
+build/
+dist/
+target/
+classes/
+bin/
+lib/  # NE PAS VERSIONNER LES JARs - Ils sont à ajouter via README
+*.war.deployed
+*.war.failed
+*.war.undeployed
+*.dodeploy
+*.isdeploying
+*.pending
+*.failed
+
+# ============================================
+# 4. WILDFLY (serveur d'application)
+# ============================================
+standalone/log/
+standalone/data/
+standalone/tmp/
+standalone/configuration/*.keystore
+standalone/configuration/*.truststore
+standalone/configuration/*.properties
+
+# ============================================
+# 5. FICHIERS DE BASE DE DONNÉES
+# ============================================
+*.sql
+*.sqlite
+*.db
+*.mdb
+*.accdb
+*.frm
+*.ibd
+*.MYD
+*.MYI
+
+# ============================================
+# 6. FICHIERS D'IDE ET EDITEURS
+# ============================================
+.idea/
+*.iml
+*.ipr
+*.iws
+.vscode/
+.settings/
+.project
+.classpath
+.factorypath
+*.bak
+*.orig
+*.rej
+
+# ============================================
+# 7. FICHIERS DE CONFIGURATION PERSONNELLE
+# ============================================
+*.conf
+*.cfg
+*.ini
+*.properties
+*.xml -except: 
+!build.xml
+!web.xml
+!beans.xml
+!faces-config.xml
+!jboss-web.xml
+!persistence.xml
+
+# ============================================
+# 8. FICHIERS DE LOGS
+# ============================================
+*.log
+logs/
+log/
+*.log.*
+log.*
+*.out
+*.err
+
+# ============================================
+# 9. FICHIERS SYSTEME D'EXPLOITATION
+# ============================================
+Thumbs.db
+*.DS_Store
+.Spotlight-V100
+.Trashes
+desktop.ini
+*.tmp
+*~
+*.swp
+*.swo
+
+# ============================================
+# 10. FICHIERS DE TEST
+# ============================================
+test/
+tests/
+*.test
+*.spec
+
+# ============================================
+# 11. FICHIERS DE RAPPORT ET DOCUMENTATION
+# ============================================
+*.pdf
+*.doc
+*.docx
+*.ppt
+*.pptx
+*.zip
+*.rar
+*.7z
+*.tar.gz
+
+# ============================================
+# 12. MAVEN (si jamais)
+# ============================================
+pom.xml.tag
+pom.xml.releaseBackup
+pom.xml.versionsBackup
+pom.xml.next
+release.properties
+
+# ============================================
+# 13. AUTRES
+# ============================================
+*.bak
+*.backup
+*.old
+*.temp
+*.cache
+*.tmp
+*.lock
+*.pid
+*.sock
+*.pdf
+*.sql

@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="jakarta.faces.html"
+      xmlns:f="jakarta.faces.core"
+      xmlns:ui="jakarta.faces.facelets">
+      
+<h:head>
+    <title>Gestion des modules</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"/>
+</h:head>
+
+<h:body>
+    <ui:include src="/includes/header.xhtml" />
+    
+    <div class="container">
+        <h1 class="mb-4">📚 Gestion des modules</h1>
+        
+        <h:messages globalOnly="true" styleClass="alert alert-info" />
+        
+        <h:form id="formModules">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="card mb-4">
+                        <div class="card-header bg-primary text-white">
+                            <h5 class="mb-0">
+                                <h:outputText value="#{moduleController.moduleSelectionne == null ? 'Ajouter un module' : 'Modifier un module'}" />
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-3">
+                                    <label class="form-label">Code :</label>
+                                    <h:inputText value="#{moduleController.nouveauModule.code}" 
+                                               styleClass="form-control" required="true"/>
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label">Nom :</label>
+                                    <h:inputText value="#{moduleController.nouveauModule.nom}" 
+                                               styleClass="form-control" required="true"/>
+                                </div>
+                                <div class="col-md-2">
+                                    <label class="form-label">Coefficient :</label>
+                                    <h:inputText value="#{moduleController.nouveauModule.coefficient}" 
+                                               styleClass="form-control" required="true"/>
+                                </div>
+                                <!-- Remplacer la section des boutons dans gestionModules.xhtml par : -->
+
+<div class="col-md-3 d-flex align-items-end">
+    <!-- Bouton Ajouter (visible quand aucun module sélectionné) -->
+    <h:commandButton value="Ajouter" 
+                   action="#{moduleController.ajouterModule}" 
+                   styleClass="btn btn-success w-100 me-2"
+                   rendered="#{moduleController.moduleSelectionne == null}">
+        <f:ajax execute="@form" render="@form" />
+    </h:commandButton>
+    
+    <!-- Bouton Modifier (visible quand un module est sélectionné) -->
+    <h:commandButton value="Modifier" 
+                   action="#{moduleController.modifierModule}" 
+                   styleClass="btn btn-primary w-100 me-2"
+                   rendered="#{moduleController.moduleSelectionne != null}">
+        <f:ajax execute="@form" render="@form" />
+    </h:commandButton>
+    
+    <!-- Bouton Annuler (visible quand un module est sélectionné) -->
+    <h:commandButton value="Annuler" 
+                   action="#{moduleController.annulerModification}"
+                   styleClass="btn btn-secondary w-100"
+                   rendered="#{moduleController.moduleSelectionne != null}">
+        <f:ajax execute="@this" render="@form" />
+    </h:commandButton>
+</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="card">
+                        <div class="card-header bg-success text-white">
+                            <h5 class="mb-0">Liste des modules</h5>
+                        </div>
+                        <div class="card-body">
+                            <table class="table table-striped table-hover">
+                                <thead class="table-dark">
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Code</th>
+                                        <th>Nom du module</th>
+                                        <th>Coefficient</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <ui:repeat value="#{moduleController.modules}" var="module">
+                                        <tr>
+                                            <td>#{module.id}</td>
+                                            <td>#{module.code}</td>
+                                            <td>#{module.nom}</td>
+                                            <td>#{module.coefficient}</td>
+                                            <td>
+                                                <h:commandButton value="✏️ Modifier" 
+                                                               styleClass="btn btn-sm btn-warning me-1"
+                                                               action="#{moduleController.preparerModification(module)}">
+                                                    <f:ajax execute="@this" render="@form" />
+                                                </h:commandButton>
+                                                
+                                                <h:commandButton value="🗑️ Supprimer" 
+                                                               styleClass="btn btn-sm btn-danger"
+                                                               action="#{moduleController.supprimerModule(module.id)}"
+                                                               onclick="return confirm('Supprimer ce module ?')">
+                                                    <f:ajax execute="@this" render="@form" />
+                                                </h:commandButton>
+                                            </td>
+                                        </tr>
+                                    </ui:repeat>
+                                    
+                                    <ui:fragment rendered="#{empty moduleController.modules}">
+                                        <tr>
+                                            <td colspan="5" class="text-center">Aucun module trouvé</td>
+                                        </tr>
+                                    </ui:fragment>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </h:form>
+    </div>
+    
+    <ui:include src="/includes/footer.xhtml" />
+</h:body>
+</html>

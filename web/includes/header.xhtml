@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="jakarta.faces.html"
+      xmlns:ui="jakarta.faces.facelets">
+      
+<ui:composition>
+    <!-- j'ai passé pas mal de temps sur cette navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary mb-4">
+        <div class="container">
+            <h:link outcome="/views/accueil" styleClass="navbar-brand">
+                📚 Gestion des Notes
+            </h:link>
+            
+            <!-- menu responsive, j'espère que ça marche sur mobile -->
+            <div class="collapse navbar-collapse">
+                <ul class="navbar-nav me-auto">
+                    <ui:fragment rendered="#{authentificationController.authentifie}">
+                        <li class="nav-item">
+                            <h:link outcome="/views/accueil" styleClass="nav-link">Accueil</h:link>
+                        </li>
+                        
+                        <!-- admin seulement -->
+                        <ui:fragment rendered="#{authentificationController.admin}">
+                            <li class="nav-item">
+                                <h:link outcome="/views/admin/dashboard" styleClass="nav-link">Dashboard Admin</h:link>
+                            </li>
+                        </ui:fragment>
+                        
+                        <!-- prof seulement -->
+                        <ui:fragment rendered="#{authentificationController.professeur}">
+                            <li class="nav-item">
+                                <h:link outcome="/views/professeur/dashboard" styleClass="nav-link">Dashboard Professeur</h:link>
+                            </li>
+                        </ui:fragment>
+                        
+                        <!-- étudiant seulement -->
+                        <ui:fragment rendered="#{authentificationController.etudiant}">
+                            <li class="nav-item">
+                                <h:link outcome="/views/etudiant/dashboard" styleClass="nav-link">Mes Notes</h:link>
+                            </li>
+                        </ui:fragment>
+                    </ui:fragment>
+                </ul>
+                
+                <!-- partie droite de la navbar -->
+                <ui:fragment rendered="#{authentificationController.authentifie}">
+                    <span class="navbar-text me-3 text-white">
+                        Salut #{authentificationController.utilisateurCourant.prenom} !
+                    </span>
+                    
+                    <h:form>
+                        <h:commandButton value="Déconnexion" action="#{authentificationController.logout()}" 
+                                       styleClass="btn btn-light" />
+                    </h:form>
+                </ui:fragment>
+            </div>
+        </div>
+    </nav>
+</ui:composition>
+</html>
