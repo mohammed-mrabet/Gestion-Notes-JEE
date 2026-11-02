@@ -198,7 +198,7 @@ MiniProjet_JEE/
 ### Étape 1 : Cloner le projet
 
 ```bash
-git clone https://github.com/Mrabet-Devx/Gestion-Notes-JEE.git
+git clone https://github.com/mohammed-mrabet/Gestion-Notes-JEE.git
 
 Étape 2 : Créer la base de données
 
